@@ -5,6 +5,9 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
 import android.app.Notification;
+import android.app.PendingIntent;
+import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
@@ -35,6 +38,20 @@ public class MainActivity extends AppCompatActivity {
 
         String title = editTextTitle.getText().toString();
         String message = editTexMessage.getText().toString();
+        int requestCode = 0;
+
+        Intent activityIntent = new Intent(this, MainActivity.class);
+        PendingIntent contentIntent = PendingIntent.getActivity(this, requestCode, activityIntent, 0);
+
+        // notifications are actually handled by Android OS so a pending Intent is necessary
+        // to define the rules you are granting it the right to perform the operation you
+        // have specified as if the other application was yourself
+
+        // this is for the button
+        Intent broadcastIntent = new Intent(this, NotificationReceiver.class);
+        broadcastIntent.putExtra("toastMessage", message);
+        // the flag means that if we create another pending intent it updates the extras of the intent
+        PendingIntent actionIntent = PendingIntent.getBroadcast(this, 0, broadcastIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         Notification notification = new NotificationCompat.Builder(this, CHANNEL_1_ID)
                 .setSmallIcon(R.drawable.ic_baseline_directions_run_24)
@@ -42,6 +59,11 @@ public class MainActivity extends AppCompatActivity {
                 .setContentText(message)
                 .setPriority(NotificationCompat.PRIORITY_HIGH) // additionally in here for lower api
                 .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+                .setColor(Color.CYAN)
+                .setContentIntent(contentIntent)
+                .setAutoCancel(true) // dismiss the notification when touched
+                .setOnlyAlertOnce(true)
+                .addAction(R.mipmap.ic_launcher, "Action", actionIntent)
                 .build();
 
         notificationManagerC.notify(id_1, notification);
