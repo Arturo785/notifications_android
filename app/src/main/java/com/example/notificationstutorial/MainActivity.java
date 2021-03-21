@@ -7,6 +7,8 @@ import androidx.core.app.NotificationManagerCompat;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
@@ -53,10 +55,20 @@ public class MainActivity extends AppCompatActivity {
         // the flag means that if we create another pending intent it updates the extras of the intent
         PendingIntent actionIntent = PendingIntent.getBroadcast(this, 0, broadcastIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
+
+        Bitmap largeIcon = BitmapFactory.decodeResource(getResources(), R.drawable.kemonito);
+
         Notification notification = new NotificationCompat.Builder(this, CHANNEL_1_ID)
                 .setSmallIcon(R.drawable.ic_baseline_directions_run_24)
                 .setContentTitle(title)
                 .setContentText(message)
+                .setLargeIcon(largeIcon)
+                // style part
+                .setStyle(new NotificationCompat.BigTextStyle()
+                        .bigText(getString(R.string.long_dummy_text))
+                        .setBigContentTitle("Big content title")
+                        .setSummaryText("Summary text"))
+                // end of style
                 .setPriority(NotificationCompat.PRIORITY_HIGH) // additionally in here for lower api
                 .setCategory(NotificationCompat.CATEGORY_MESSAGE)
                 .setColor(Color.CYAN)
@@ -79,6 +91,15 @@ public class MainActivity extends AppCompatActivity {
                 .setSmallIcon(R.drawable.ic_baseline_monetization_on_24)
                 .setContentTitle(title)
                 .setContentText(message)
+                .setStyle(new NotificationCompat.InboxStyle()
+                        .addLine("This is line 1")
+                        .addLine("This is line 2")
+                        .addLine("This is line 3")
+                        .addLine("This is line 4")
+                        .addLine("This is line 5")
+                        .addLine("This is line 6")
+                        .setBigContentTitle("Big content title")
+                        .setSummaryText("Summary text"))
                 .setPriority(NotificationCompat.PRIORITY_LOW) // additionally in here for lower api
                 .build();
 
