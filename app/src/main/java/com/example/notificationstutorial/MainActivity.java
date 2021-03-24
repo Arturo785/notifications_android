@@ -15,6 +15,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.view.View;
 import android.widget.EditText;
@@ -32,7 +33,6 @@ public class MainActivity extends AppCompatActivity {
     private EditText editTextTitle;
     private EditText editTexMessage;
 
-    private MediaSessionCompat mediaSession;
 
     static List<Message> MESSAGES = new ArrayList<>();
 
@@ -46,7 +46,6 @@ public class MainActivity extends AppCompatActivity {
         editTextTitle = findViewById(R.id.edit_text_title);
         editTexMessage = findViewById(R.id.edit_text_message);
 
-        mediaSession = new MediaSessionCompat(this, "tag");
 
         MESSAGES.add(new Message("Good morning", "Tu"));
         MESSAGES.add(new Message("Hi", null)); // means is mine
@@ -139,28 +138,37 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void sendOnChannel2(View view) {
-        int id_2 = 2;
+        final int id_2 = 2;
 
-        String title = editTextTitle.getText().toString();
-        String message = editTexMessage.getText().toString();
+        final int progressMax = 100;
 
-        Bitmap artwork = BitmapFactory.decodeResource(getResources(), R.drawable.kemonito);
-
-        Notification notification = new NotificationCompat.Builder(this, CHANNEL_2_ID)
+        final NotificationCompat.Builder notification = new NotificationCompat.Builder(this, CHANNEL_2_ID)
                 .setSmallIcon(R.drawable.ic_baseline_monetization_on_24)
-                .setContentTitle(title)
-                .setContentText(message)
-                .setLargeIcon(artwork)
-                .addAction(R.drawable.hand, "Hi", null)
-                .addAction(R.drawable.cycle, "Run", null)
-                .addAction(R.drawable.call, "Call", null)
-                .setStyle(new androidx.media.app.NotificationCompat.MediaStyle()
-                        .setShowActionsInCompactView(0,1,2)
-
-                ).setSubText("Sub text")
+                .setContentTitle("Download")
+                .setContentText("Download in progress")
                 .setPriority(NotificationCompat.PRIORITY_LOW) // additionally in here for lower api
-                .build();
+                .setOngoing(true)
+                .setOnlyAlertOnce(true)
+                .setProgress(progressMax, 0, false);
 
-        notificationManagerC.notify(id_2, notification);
+        notificationManagerC.notify(id_2, notification.build());
+
+        new Thread(new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                SystemClock.sleep(2000);
+                for(int progress = 0; progress <= progressMax; progress+= 10){
+                    notification.setProgress(progressMax, progress, false);
+                    notificationManagerC.notify(id_2, notification.build());
+                    SystemClock.sleep(1000);
+                }
+
+                notification.setContentText("Download finished")
+                        .setProgress(0,0, false)
+                        .setOngoing(false);
+                notificationManagerC.notify(id_2, notification.build());
+            }
+        })).start();
     }
 }
