@@ -30,6 +30,7 @@ import java.util.List;
 
 import static com.example.notificationstutorial.App.CHANNEL_1_ID;
 import static com.example.notificationstutorial.App.CHANNEL_2_ID;
+import static com.example.notificationstutorial.App.CHANNEL_3_ID;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -68,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
             openChannelSettings(CHANNEL_1_ID);
             return;
         }
-        
+
         sendChannel1Notification(this);
     }
 
@@ -234,5 +235,14 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra(Settings.EXTRA_CHANNEL_ID, channelId);
 
         startActivity(intent);
+    }
+
+    public void deleteNotificationChannels(View view) {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            NotificationManager manager = getSystemService(NotificationManager.class);
+
+            manager.deleteNotificationChannel(CHANNEL_3_ID);
+           // manager.deleteNotificationChannelGroup(GROUP_1_ID);
+        }
     }
 }
