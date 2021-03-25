@@ -139,36 +139,52 @@ public class MainActivity extends AppCompatActivity {
 
     public void sendOnChannel2(View view) {
         final int id_2 = 2;
+        List<String> titles = new ArrayList<>();
+        List<String> messages = new ArrayList<>();
 
-        final int progressMax = 100;
+        for (int i = 1; i <= 2; i++) {
+            titles.add("title: " + i);
+            messages.add("message : " +i);
+        }
 
-        final NotificationCompat.Builder notification = new NotificationCompat.Builder(this, CHANNEL_2_ID)
+        final Notification notification1 = new NotificationCompat.Builder(this, CHANNEL_2_ID)
                 .setSmallIcon(R.drawable.ic_baseline_monetization_on_24)
-                .setContentTitle("Download")
-                .setContentText("Download in progress")
+                .setContentTitle("Tittle 1")
+                .setContentText("Message 1")
                 .setPriority(NotificationCompat.PRIORITY_LOW) // additionally in here for lower api
-                .setOngoing(true)
-                .setOnlyAlertOnce(true)
-                .setProgress(progressMax, 0, false);
+                .setGroup("example group")
+                .build();
 
-        notificationManagerC.notify(id_2, notification.build());
+        final Notification notification2 = new NotificationCompat.Builder(this, CHANNEL_2_ID)
+                .setSmallIcon(R.drawable.ic_baseline_monetization_on_24)
+                .setContentTitle("Tittle 2")
+                .setContentText("Message 2")
+                .setPriority(NotificationCompat.PRIORITY_LOW) // additionally in here for lower api
+                .setGroup("example group")
+                .build();
 
-        new Thread(new Thread(new Runnable() {
+        final Notification summaryNotification = new NotificationCompat.Builder(this, CHANNEL_2_ID)
+                .setSmallIcon(R.drawable.ic_baseline_monetization_on_24)
+                .setStyle(new NotificationCompat.InboxStyle()
+                    .addLine("title2 message2 ")
+                    .addLine("title1 message1 ")
+                    .setBigContentTitle("2 new messages")
+                    .setSummaryText("user@example.com")
+                )
+                .setPriority(NotificationCompat.PRIORITY_LOW) // additionally in here for lower api
+                .setGroup("example group")
+                .setGroupSummary(true)
+                .setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_CHILDREN)
+                .build();
 
-            @Override
-            public void run() {
-                SystemClock.sleep(2000);
-                for(int progress = 0; progress <= progressMax; progress+= 10){
-                    notification.setProgress(progressMax, progress, false);
-                    notificationManagerC.notify(id_2, notification.build());
-                    SystemClock.sleep(1000);
-                }
 
-                notification.setContentText("Download finished")
-                        .setProgress(0,0, false)
-                        .setOngoing(false);
-                notificationManagerC.notify(id_2, notification.build());
-            }
-        })).start();
+        SystemClock.sleep(2000);
+        notificationManagerC.notify(id_2, notification1);
+        SystemClock.sleep(2000);
+        notificationManagerC.notify(4, notification2);
+        SystemClock.sleep(2000);
+        notificationManagerC.notify(5, summaryNotification);
+
+
     }
 }
